@@ -1,1 +1,1 @@
-# Python-Search-Engine
+A python based search engine which searches for a phrase or word in all the text files in the current directory and its subdirectory recursively and then print the files name in order of best tf-idf score of matches
