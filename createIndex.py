@@ -93,38 +93,39 @@ class CreateIndex:
         files = self.get_all_files()
         file_id = 0
         for file in files:
-            f = open(file, 'r')
-            fr = f.read()
-            terms = self.getTerms(fr)
-            file_id += 1
-            
-            self.titleIndex[file_id] = file[2:]
-            f.close()
+            if not (file[2:] in ["stopwords.txt", "termsIndex.txt", "titleIndex.txt"]):
+                f = open(file, 'r')
+                fr = f.read()
+                terms = self.getTerms(fr)
+                file_id += 1
+                
+                self.titleIndex[file_id] = file[2:]
+                f.close()
 
-            self.numDocuments += 1
+                self.numDocuments += 1
 
-            # build the index for the current page
-            termdictPage = {}
-            for position, term in enumerate(terms):
-                try:
-                    termdictPage[term][1].append(position)
-                except:
-                    termdictPage[term] = [file_id, array('I', [position])]
-            
-            # normalize the document vector
-            norm = 0
-            for term, posting in termdictPage.iteritems():
-                norm += len(posting[1])**2
-            norm = math.sqrt(norm)
-            
-            # calculate the tf and df weights
-            for term, posting in termdictPage.iteritems():
-                self.tf[term].append('%.4f' % (len(posting[1])/norm))
-                self.df[term] += 1
-            
-            # merge the current page index with the main index
-            for termPage, postingPage in termdictPage.iteritems():
-                self.index[termPage].append(postingPage)
+                # build the index for the current page
+                termdictPage = {}
+                for position, term in enumerate(terms):
+                    try:
+                        termdictPage[term][1].append(position)
+                    except:
+                        termdictPage[term] = [file_id, array('I', [position])]
+                
+                # normalize the document vector
+                norm = 0
+                for term, posting in termdictPage.iteritems():
+                    norm += len(posting[1])**2
+                norm = math.sqrt(norm)
+                
+                # calculate the tf and df weights
+                for term, posting in termdictPage.iteritems():
+                    self.tf[term].append('%.4f' % (len(posting[1])/norm))
+                    self.df[term] += 1
+                
+                # merge the current page index with the main index
+                for termPage, postingPage in termdictPage.iteritems():
+                    self.index[termPage].append(postingPage)
             
         gc.enable()
             
